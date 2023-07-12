@@ -1,120 +1,65 @@
-/*
-let scores = [60, 50, 60, 58, 54, 54,
-              58, 50, 52, 54, 48, 69,
-              34, 55, 51, 52, 44, 51,
-              69, 64, 66, 55, 52, 61,
-              46, 31, 57, 52, 44, 18,
-              41, 53, 55, 61, 51, 44];
-
-let costs = [.25, .27, .25, .25, .25, .25,
-              .33, .31, .25, .29, .27, .22,
-              .31, .25, .25, .33, .21, .15,
-              .37, .15, .28, .25, .24, .22,
-              .20, .25, .30, .25, .24, .25,
-              .25, .25, .27, .25, .26, .29];
-
-
-function getResult(scores) {
-  let highResult = 0;
-  for(let i = 0; i < scores.length; i++) {
-    console.log("Index: " + i + " value: " + scores[i]);;
-    if(highResult < scores[i]) {
-      highResult = scores[i];
+let model = {
+  boardSize: 7,
+  numShips: 3,
+  shipLength: 3,
+  shipsSunk: 0,
+  ships: [{ locations: ['06', '16', '26'], hits: ['', '', '']},
+          { locations: ['24', '34', '44'], hits: ['', '', '']},
+          { locations: ['10', '11', '12'], hits: ['', '', '']},],
+  fire: function(guess) {
+    for(let i = 0; i < this.numShips; i++) {
+      // console.log
+      let ship = this.ships[i];
+      let index = ship.locations.indexOf(guess);
+      if(index >= 0){
+        ship.hits[index] = 'hit';
+        view.displayHit(guess);
+        view.displayMessage('HIT!');
+        if(this.isSunk(ship)) {
+          view.displayMessage('You sank enemy battleship!');
+          this.shipsSunk++;
+        }
+        return true;
+      }
     }
-  }
-  return highResult;
-}
-highResult = getResult(scores);
-let array = [];
-function getAttemt (scores, highResult) {
-  
-  for(i = 0; i < scores.length; i++) {
-    if(highResult == scores[i]) {
-      array.push(i);
-    }
-  }
-  return array;
-}
-
-function getKey(scores, costs, highResult) {
-  let value = 100;
-  let index;
-  for(i = 0; i < scores.length; i++) {
-    if(scores[i] == highResult && costs[i] < value) {
-      value = costs[i];
-      index = i;
-    }
-  }
-  return index;
-}
-index = getKey(scores, costs, highResult);
-array = getAttemt(scores, highResult);
-console.log("Bubbles tests: " + scores.length);
-console.log("The best result is: " + highResult);
-console.log("The best index: " + array);
-console.log("Index of the best bubble: " + index);
-
-function century(year) {
-  // Finish this :)
-  if(year % 100 > 0) {
-    year = Math.floor(year / 100) + 1;
-  }else {
-    year = year / 100;
-  }
-  
-  return year;
-}
-year = century(1900);
-console.log("Century: " + year);
-let chevy = {
-  make: "Chevy",
-  model: "Bel Air",
-  year: 1957,
-  color: "red",
-  passenger: 2,
-  convertible: false,
-  mileage: 1021,
-  fuel: 0,
-  started: false,
-  start: function() {
-    if(this.fuel > 0) {
-      this.started = true;
-    }else {
-      console.log("You need fuel up");
-    }
-    
+    view.displayMiss(guess);
+    view.displayMessage('MISS!');
+    return false;
   },
-  stop: function() {
-    this.started = false;
-  },
-  drive: function() {
-    if(this.started && this.fuel > 0) {
-      console.log("You drive.");
-      this.fuel = this.fuel - 1;
-    }else if(this.fuel <= 0){
-      console.log("You don't have fuel!");
-    }else {
-      console.log("Start your engine!");
+  isSunk: function(ship) {
+    // console.log
+    for(let i = 0; i < this.shipLength; i++) {
+      if (ship.hits[i] !== 'hit') {
+        return false;
+      }
     }
+    return true;
   },
-  addFuel: function(amount) {
-    this.fuel += amount; 
-  }
 };
 
-chevy.start();
-chevy.drive();
-chevy.stop();
-chevy.addFuel(2);
-*/
+let view = {
+  displayMessage: function(msg) {
+    let messageArea = document.getElementById("messageArea");
+    messageArea.innerHTML = msg;
+  },
+  displayHit: function(location) {
+    let cell = document.getElementById(location);
+    cell.setAttribute("class", "hit");
+  },
+  displayMiss: function(location){
+    let cell = document.getElementById(location);
+    cell.setAttribute("class", "miss");
+  },
+};
 
-function Duck (sound) {
-  this.sound = sound;
-  this.quack = function() {
-    console.log(this.sound);
-  }
-}
-let toy = new Duck("quack, quack");
-toy.quack();
-console.log(typeof toy);
-console.log(toy instanceof Duck);
+model.fire('53');
+model.fire('06');
+model.fire('16');
+model.fire('26');
+model.fire('34');
+model.fire('24');
+model.fire('44');
+model.fire('12');
+model.fire('11');
+model.fire('10');
+model.fire('66');
